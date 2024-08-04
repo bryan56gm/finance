@@ -21,7 +21,31 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
+db_path = "/tmp/finance.db" if os.getenv("VERCEL_ENV") else "finance.db"
+db = SQL(f"sqlite:///{db_path}")
+
+@app.before_first_request
+def setup():
+    if not os.path.exists(db_path):
+        db.execute("""
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                hash TEXT NOT NULL,
+                cash NUMERIC NOT NULL DEFAULT 10000.00
+            )
+        """)
+        db.execute("""
+            CREATE TABLE transactions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                symbol TEXT NOT NULL,
+                shares INTEGER NOT NULL,
+                price NUMERIC NOT NULL,
+                transacted_at DATETIME NOT NULL,
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        """)
 
 
 @app.after_request
