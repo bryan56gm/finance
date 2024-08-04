@@ -237,48 +237,49 @@ def quote():
 def register():
     """Register user"""
     if request.method == "POST":
-        # Ensure username was submited
-        if not request.form.get("username"):
-            return apology("must provide username")
-
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            return apology("must provide password")
-
-        # Ensure password confirmation was submitted
-        elif not request.form.get("confirmation"):
-            return apology("must provide password confirmation")
-
-        # Ensure password and confirmation match
-        elif request.form.get("password") != request.form.get("confirmation"):
-            return apology("passwords do not match")
-
-        # Check password complecity
-        password = request.form.get("password")
-        print(password)
-        if not re.match(
-            r"^(?=.*[A-Z])(?=.*[\d@#$%^&+=!.ñ])[A-Za-z\d@#$%^&+=!.ñ]{8,}$", password
-        ):
-            return apology(
-                "passwords must have at least 8 characters, including at least one letter, one number and one speacial character"
-            )
-
-        # Hash the password
-        hashed_password = generate_password_hash(request.form.get("password"))
-
-        # Insert user into the database
         try:
+            # Ensure username was submited
+            if not request.form.get("username"):
+                return apology("must provide username")
+
+            # Ensure password was submitted
+            elif not request.form.get("password"):
+                return apology("must provide password")
+
+            # Ensure password confirmation was submitted
+            elif not request.form.get("confirmation"):
+                return apology("must provide password confirmation")
+
+            # Ensure password and confirmation match
+            elif request.form.get("password") != request.form.get("confirmation"):
+                return apology("passwords do not match")
+
+            # Check password complecity
+            password = request.form.get("password")
+            if not re.match(
+                r"^(?=.*[A-Z])(?=.*[\d@#$%^&+=!.ñ])[A-Za-z\d@#$%^&+=!.ñ]{8,}$", password
+            ):
+                return apology(
+                    "passwords must have at least 8 characters, including at least one letter, one number and one speacial character"
+                )
+
+            # Hash the password
+            hashed_password = generate_password_hash(request.form.get("password"))
+
+            # Insert user into the database
             db.execute(
                 "INSERT INTO users (username, hash) VALUES (?, ?)",
                 request.form.get("username"),
                 hashed_password,
             )
             return redirect("/")
-        except:
-            return apology("username already exists")
+        except Exception as e:
+            print(f"Error during registration: {e}")
+            return apology("An error occurred during registration. Please try again.")
 
     else:
         return render_template("register.html")
+
 
 
 @app.route("/sell", methods=["GET", "POST"])
