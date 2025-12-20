@@ -3,15 +3,19 @@ nav .navbar-brand
 {
     font-size: xx-large;
 }
+nav .container{
+    width: 95%;
+    max-width: 1200px;
+}
 
 /* Colors for brand */
 nav .navbar-brand .blue
 {
-    color: #537fbe;
+    color: #00BFA6;
 }
 nav .navbar-brand .red
 {
-    color: #ea433b;
+    color: #FF6D00;
 }
 nav .navbar-brand .yellow
 {
